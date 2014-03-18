@@ -44,7 +44,7 @@ T01(4).channel_list = cellstr(T01(4).channel_list);
 T01(5).station = 'ERPA';
 T01(5).network = 'US';
 T01(5).pWaveArrival = '2011-03-17 10:53:30.60';
-T01(5).sWaveArrival = '2011-03-17 10:53.43.80';
+T01(5).sWaveArrival = '2011-03-17 10:53:43.80';
 T01(5).template = '17_Mar';
 T01(5).channel_list = ['BHE';'BHN';'BHZ'];
 T01(5).channel_list = cellstr(T01(5).channel_list);
@@ -53,7 +53,7 @@ T01(6).station = 'O56A';
 T01(6).network = 'TA';
 T01(6).template = '17_Mar';
 T01(6).pWaveArrival = '2011-03-17 10:53:42.40';
-T01(6).sWaveArrival = '2011-03-17 10:52:06.35';
+T01(6).sWaveArrival = '2011-03-17 10:54:06.35';
 T01(6).channel_list = ['BHE';'BHN';'BHZ'];
 T01(6).channel_list = cellstr(T01(6).channel_list);
 
@@ -114,6 +114,7 @@ T02(6).channel_list = ['BHE';'BHN';'BHZ'];
 T02(6).channel_list = cellstr(T02(6).channel_list);
 
 
-
+template_names = ['17_Mar';'25_Nov'];
+template_names = cellstr(template_names);
 template_list = {T01;T02};
 

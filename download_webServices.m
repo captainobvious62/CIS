@@ -65,23 +65,16 @@ if strcmp(NET,'US') == 1
     end
 end
 %% END OF NONSENSE
-
-
-
-
-
-
-
-
-
-
 ymd=ord2date([YEAR DDD]);
 MONTH=ymd(2);
 DAY=ymd(3);
 START=[num2str(YEAR),'-',num2str(MONTH,'%02d'),'-',num2str(DAY,'%02d'),'T00:00:00.000000'];
 END=[num2str(YEAR),'-',num2str(MONTH,'%02d'),'-',num2str(DAY,'%02d'),'T23:59:59.999999'];
-['http://service.iris.edu/fdsnws/dataselect/1/query?net=',NET,'&sta=',STA,'&loc=',LOC,'&cha=',CHA_E,'&start=',START,'&end=',END]
+['http://service.iris.edu/fdsnws/dataselect/1/query?net=',NET,'&sta=',STA,'&loc=',LOC,'&cha=',CHA_E,'&start=',START,'&end=',END];
+fprintf('Running Webservice Check %s\n',datestr(now));
+fprintf('%s %s %s %s\n',NET,STA,num2str(YEAR),num2str(DDD,'%03d'));
 if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_E,'.',num2str(YEAR),'.',num2str(DDD,'%03d')],'file') == 0 && check_uptime(STA,NET,CHA_E,LOC,doy2date(DDD,YEAR)) == 1
+    fprintf([NET,'/',STA,'/mseed/',STA,'.',CHA_N,'.',num2str(YEAR),'.',num2str(DDD,'%03d'),'\n'])
     try
         %%%Try to download data.
         urlwrite(['http://service.iris.edu/fdsnws/dataselect/1/query?net=',NET,...
@@ -92,6 +85,7 @@ if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_E,'.',num2str(YEAR),'.',num2str(DDD,
     end
 end
 if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_N,'.',num2str(YEAR),'.',num2str(DDD,'%03d')],'file') == 0 && check_uptime(STA,NET,CHA_N,LOC,doy2date(DDD,YEAR)) == 1
+    fprintf([NET,'/',STA,'/mseed/',STA,'.',CHA_N,'.',num2str(YEAR),'.',num2str(DDD,'%03d'),'\n'])
     try
         urlwrite(['http://service.iris.edu/fdsnws/dataselect/1/query?net=',NET,...
             '&sta=',STA,'&loc=',LOC,'&cha=',CHA_N,'&start=',START,'&end=',END],...
@@ -101,6 +95,7 @@ if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_N,'.',num2str(YEAR),'.',num2str(DDD,
     end
 end
 if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_Z,'.',num2str(YEAR),'.',num2str(DDD,'%03d')],'file') == 0 && check_uptime(STA,NET,CHA_Z,LOC,doy2date(DDD,YEAR)) == 1
+    fprintf([NET,'/',STA,'/mseed/',STA,'.',CHA_Z,'.',num2str(YEAR),'.',num2str(DDD,'%03d'),'\n'])
     try
         urlwrite(['http://service.iris.edu/fdsnws/dataselect/1/query?net=',NET,...
             '&sta=',STA,'&loc=',LOC,'&cha=',CHA_Z,'&start=',START,'&end=',END],...

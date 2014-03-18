@@ -63,10 +63,10 @@ for template_count = 1:length(template_list)
 %                fprintf('Network directory created \n');
 %            %end
             directory_check = sprintf('%s/%s/Templates/%s',network,station,components{chan_count});
-            %if exist(directory_check,'dir') ~= 7;
+            if exist(directory_check,'dir') ~= 7;
                 mkdir(directory_check);
                 fprintf('Network directory created \n');
-            %end
+            end
             
             
             directory_check = sprintf('%s',network);

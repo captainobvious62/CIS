@@ -2,13 +2,18 @@
 %
 %
 %clear all
-function [time,ccc_STA] = CC_station_day(id,NET,STA,YEAR,DAY,CHA_E,CHA_N,CHA_Z)
+function [time,ccc_STA] = CC_station_day(id,NET,STA,YEAR,DAY,CHA_E,CHA_N,CHA_Z,FREQ)
+% id = '25_Nov'
+% YEAR = 2011
+% DAY = 121
+% STA = 'N54A'
+% NET = 'TA'
 YR = YEAR;
 YEAR = num2str(YEAR);
 DDD = DAY;
 DAY = sprintf('%03d',DAY);
 %40 Hz for 1 day, in seconds
-time=0:0.025:86400;
+time=0:1/FREQ:86400;
 
 %Bandpass Filter
 high_bp=12;
@@ -18,41 +23,17 @@ comp = [0,0,0];
 LOC = '*';
 
 
-%% Obligitory fix for US network name change
 
-if strcmp(NET,'US') == 1
+fprintf('CC Station Day %s\n',datestr(now));
+fprintf('%s %s %s %s\n',NET,STA,num2str(YEAR),num2str(DDD,'%03d'));
+
+
+
+
+if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_E,'.',num2str(YEAR),'.',num2str(DDD,'%03d')],'file') 
     
-    time = doy2date(DDD,YR);
-    change_time = datenum('2011-05-03 00:00:00');
-    if strcmp(CHA_E,'BHE') == 1
-        if time > change_time
-            CHA_E = 'BH1';
-        end;
-    end
-    if strcmp(CHA_N,'BHN') == 1
-        if time > change_time;
-            CHA_N = 'BH2';
-        end
-    end
-    if strcmp(CHA_E,'BH1') == 1
-        if time < change_time;
-            CHA_E = 'BHE';
-        end
-    end
-    if strcmp(CHA_N,'BH2') == 1
-        if time < change_time;
-            CHA_N = 'BHN';
-        end
-    end
-end
-%% END OF NONSENSE
-
-
-if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_E,'.',num2str(YEAR),'.',num2str(DDD,'%03d')],'file') == 0 
     load([NET,'/',STA,'/Templates/E/template_',id,'.mat']);
-    
-    
-    E_seed = rdmseed(strcat([char(STA),'/mseed/',char(STA),'.',CHA_E,'.',YEAR,'.',DAY]));
+    E_seed = rdmseed(strcat([char(NET),'/',char(STA),'/mseed/',char(STA),'.',CHA_E,'.',YEAR,'.',DAY]));
     E_time_vec=datevec(cat(1,E_seed.t));
     day=median(E_time_vec(:,3));
     good_day_E=find(E_time_vec(:,3)==day);
@@ -69,12 +50,12 @@ if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_E,'.',num2str(YEAR),'.',num2str(DDD,
     
     comp(1) = 1;
 end
-if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_N,'.',num2str(YEAR),'.',num2str(DDD,'%03d')],'file') == 0 
+if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_N,'.',num2str(YEAR),'.',num2str(DDD,'%03d')],'file') 
     load([NET,'/',STA,'/Templates/N/template_',id,'.mat']);
     
     
     %N_seed = rdmseed(strcat(ls([char(STA),'/mseed/*BH',COMP,'*',YEAR,'*',DAY])));
-    N_seed = rdmseed(strcat([char(STA),'/mseed/',char(STA),'.',CHA_N,'.',YEAR,'.',DAY]));
+    N_seed = rdmseed(strcat([char(NET),'/',char(STA),'/mseed/',char(STA),'.',CHA_N,'.',YEAR,'.',DAY]));
     N_time_vec=datevec(cat(1,N_seed.t));
     good_day_N=find(N_time_vec(:,3)==day);
     N_time=sum([[zeros(length(N_time_vec(good_day_N)),1),zeros(length(N_time_vec(good_day_N)),1),...
@@ -89,11 +70,11 @@ if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_N,'.',num2str(YEAR),'.',num2str(DDD,
     clear N_seed N_time_vec;
     comp(2) = 1;
 end
-if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_Z,'.',num2str(YEAR),'.',num2str(DDD,'%03d')],'file') == 0 
+if exist([NET,'/',STA,'/mseed/',STA,'.',CHA_Z,'.',num2str(YEAR),'.',num2str(DDD,'%03d')],'file')
     load([NET,'/',STA,'/Templates/Z/template_',id,'.mat']);
     
     %Z_seed = rdmseed(strcat(ls([char(STA),'/mseed/*BH',COMP,'*',YEAR,'*',DAY])));
-    Z_seed = rdmseed(strcat([char(STA),'/mseed/',char(STA),'.',CHA_Z,'.',YEAR,'.',DAY]));
+    Z_seed = rdmseed(strcat([char(NET),'/',char(STA),'/mseed/',char(STA),'.',CHA_Z,'.',YEAR,'.',DAY]));
     Z_time_vec=datevec(cat(1,Z_seed.t));
     good_day_z=find(Z_time_vec(:,3)==day);
     Z_time=sum([[zeros(length(Z_time_vec(good_day_z)),1),zeros(length(Z_time_vec(good_day_z)),1),...
@@ -119,6 +100,6 @@ end
 if comp(3) == 1
     ccc_STA = ccc_STA + interp1(B_Z,ccc_Z(1:length(B_Z)),time,'nearest');
 end
-end
+%end
 
 
