@@ -20,8 +20,8 @@ month_length = [31,28,31,30,31,30,31,31,30,31,30,31];
 
 %Starting Date/Time
 start_year = 2011;
-start_month = 03;
-start_day = 17;
+start_month = 11;
+start_day = 20;
 start_minute = 00;
 start_second = 00;
 
@@ -34,8 +34,8 @@ start_second = 00;
 
 %Ending Date/Time
 end_year = 2011;
-end_month = 03;
-end_day = 18;
+end_month = 11;
+end_day = 30;
 end_minute = 00;
 end_second = 00;
 

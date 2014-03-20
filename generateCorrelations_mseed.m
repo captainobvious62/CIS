@@ -1,32 +1,19 @@
 function [correlation_object,correlation_object_savename] = generateCorrelations_mseed(STA,NET,CHA,CHA_TEMPLATE,moveout,matches,low_bp,high_bp,before_S_Wave,after_S_Wave,template,erste,ende,trigger)
-% for station_count = 1:length(station_list)
-%     moveout = station_list(station_count).sWaveArrivalNumeric - station_list(1).sWaveArrivalNumeric;
-%     NET = station_list(station_count).network;
-%     STA = station_list(station_count).station;
-%     LOC = '*';
-%     CHAN_LIST = station_list(station_count).channel_list;
-%     for chan_count = 1:length(CHAN_LIST);
-%         CHA = CHAN_LIST{chan_count};
-%
-%         directory_check = sprintf('./%s/%s/%s/%s/CO',NET,STA,CHA,template);
-%         if exist(directory_check,'dir') ~= 7;
-%             mkdir(directory_check);
-%             fprintf('Template directory created \n');
-%         end
-correlation_object_savename = sprintf('./%s/%s/%s/%s/CO/%s.to.%s.%s.%s.mat',NET,STA,CHA,template,num2str(erste),num2str(ende),STA,CHA);
+
+correlation_object_savename = sprintf('./%s/%s/%s/%s/CO/%s.to.%s.%s.%s.mat',NET,STA,CHA,template,erste,ende,STA,CHA);
 correlation_object = correlation();
 pick_number = 0;
 
 for i = 1:length(matches(:,1))
     
     % sync_date = [datestr(doy2date(matches(i,2),matches(i,1))),' ',datestr((matches(i,3)+moveout)/86400,'HH:MM:SS.FFF')];
-    start_time = [datestr(doy2date(matches(i,2),matches(i,1))),' ',datestr((matches(i,3)+moveout-before_S_Wave)/86400,'HH:MM:SS.FFF')];
+    start_time = [datestr(doy2date(matches(i,2),matches(i,1))),' ',datestr((matches(i,3)+moveout-before_S_Wave)/86400,'HH:MM:SS.FFF')]
     %  end_time = [datestr(doy2date(matches(i,2),matches(i,1))),' ',datestr((matches(i,3)+moveout-after_S_Wave)/86400,'HH:MM:SS.FFF')];
     
     %% Obligitory fix for US network name change
     DAY = matches(i,2);
     YEAR = matches(i,1);
-    
+    fprintf('%s %s %s\n',num2str(matches(i,1)),num2str(matches(i,2)),num2str(matches(i,3)));
     if strcmp(NET,'US') == 1
         
         time = doy2date(DAY,YEAR);
@@ -55,6 +42,7 @@ for i = 1:length(matches(:,1))
     %% END OF NONSENSE
     YEAR = num2str(YEAR);
     DAY = num2str(DAY);
+    fprintf('%s %s %s %s %s\n',YEAR,DAY,NET,STA,CHA);
     seed = rdmseed(strcat([char(NET),'/',char(STA),'/mseed/',char(STA),'.',CHA,'.',YEAR,'.',DAY]));
     time_vec=datevec(cat(1,seed.t));
     day=median(time_vec(:,3));
@@ -67,16 +55,16 @@ for i = 1:length(matches(:,1))
     data=temp(intersect(good_day,I));
     clear temp;
     freq = seed(1).SampleRate;
-    bp=bandpass(data,low_bp,high_bp,1/freq,3);
+    %bp=bandpass(data,low_bp,high_bp,1/freq,3);
     
-    index_time = matches(i,3)*freq;
+    index_time = matches(i,3)*freq + moveout*freq;
     begin_time = index_time - before_S_Wave*freq;
     fin_time = index_time + after_S_Wave*freq;
     snippet = data(begin_time:fin_time);
     WF_Snippet = waveform(STA,CHA,seed(1).SampleRate,start_time,snippet);
     WF_Snippet = fillgaps(WF_Snippet,0);
     
-    WF_Snippet = filter_waveform_BP(WF_Snippet,lower_band,upper_band);
+    WF_Snippet = filter_waveform_BP(WF_Snippet,low_bp,high_bp);
 
     WF_Snippet = addfield(WF_Snippet,'Rel_MAD',matches(i,4));
     WF_Snippet = addfield(WF_Snippet,'Phase',trigger);

@@ -1,7 +1,10 @@
 function uptime = check_uptime(station,network,channel,location,time)
 check_savename = sprintf('%s/%s/Check/%s/DATA_%s_%s.mat',network,station,channel,station,channel);
-mkdir(sprintf('./%s/%s/Check/%s',network,station,channel));
-
+directory_check = sprintf('./%s/%s/Check/%s',network,station,channel);
+if exist(directory_check,'dir') ~= 7;
+    mkdir(directory_check);
+    fprintf('Station directory created \n');
+end
 if exist(check_savename,'file') ~= 2
     a = [];
     while isempty(a) == 1
